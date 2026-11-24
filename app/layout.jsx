@@ -1,12 +1,28 @@
 
 import "./globals.css";
 import Script from "next/script";
-import TelegramInit from "./telegram-init";
 
 export const metadata = {
   title: "SPEKTOR — Digital Education",
   description: "Premium digital education platform"
 };
+
+function TelegramInit() {
+  return (
+    <Script
+      id="telegram-init"
+      strategy="afterInteractive"
+      dangerouslySetInnerHTML={{
+        __html: `
+          if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+          }
+        `
+      }}
+    />
+  );
+}
 
 export default function RootLayout({ children }) {
   return (
