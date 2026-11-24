@@ -45,18 +45,75 @@ const courses = [
 
 export default function Home() {
   const [logoOpacity, setLogoOpacity] = useState(0.9);
+  const [user, setUser] = useState(null);
+  const [authStatus, setAuthStatus] = useState("ПРОВЕРКА TELEGRAM...");
 
   useEffect(() => {
     const handleScroll = () => {
       const progress = Math.min(window.scrollY / 450, 1);
-      const opacity = 0.9 - progress * 0.78;
-      setLogoOpacity(opacity);
+      setLogoOpacity(0.9 - progress * 0.78);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    let timer;
+    let attempts = 0;
+    let cancelled = false;
+
+    const authenticate = async () => {
+      if (cancelled) return;
+
+      const initData = window.Telegram?.WebApp?.initData;
+
+      if (!initData) {
+        attempts += 1;
+
+        if (attempts < 20) {
+          timer = setTimeout(authenticate, 250);
+        } else {
+          setAuthStatus("ОТКРОЙТЕ ЧЕРЕЗ TELEGRAM");
+        }
+
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/auth", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ initData })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success || !data.user) {
+          throw new Error("Authentication failed");
+        }
+
+        if (!cancelled) {
+          setUser(data.user);
+          setAuthStatus("АВТОРИЗОВАН");
+        }
+      } catch {
+        if (!cancelled) {
+          setAuthStatus("ОШИБКА АВТОРИЗАЦИИ");
+        }
+      }
+    };
+
+    authenticate();
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, []);
 
   return (
@@ -94,10 +151,7 @@ export default function Home() {
           transition: opacity 0.15s linear;
         }
 
-        .header,
-        .hero,
-        .catalog,
-        .footer {
+        .header, .hero, .catalog, .footer {
           position: relative;
           z-index: 1;
         }
@@ -122,6 +176,15 @@ export default function Home() {
           color: #777;
           font-size: 10px;
           letter-spacing: 3px;
+          text-align: right;
+        }
+
+        .auth-label {
+          color: #c7ff4d;
+          font-size: 9px;
+          letter-spacing: 1px;
+          margin-top: 7px;
+          text-align: right;
         }
 
         .hero {
@@ -323,7 +386,13 @@ export default function Home() {
         <div className="logo">
           SPEKTOR<span>.</span>
         </div>
-        <div className="header-label">DIGITAL EDUCATION</div>
+
+        <div>
+          <div className="header-label">DIGITAL EDUCATION</div>
+          <div className="auth-label">
+            {user ? `ПРИВЕТ, ${user.first_name}` : authStatus}
+          </div>
+        </div>
       </header>
 
       <section className="hero">
