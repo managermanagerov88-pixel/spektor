@@ -68,7 +68,7 @@ export default async function CoursePage({ params }) {
         SPEKTOR © 2026
       </footer>
 
-      <style jsx>{`
+      <style>{`
         .course-page {
           min-height: 100vh;
           background: #0b0c0f;
