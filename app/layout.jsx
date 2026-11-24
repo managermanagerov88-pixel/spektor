@@ -7,23 +7,6 @@ export const metadata = {
   description: "Premium digital education platform"
 };
 
-function TelegramInit() {
-  return (
-    <Script
-      id="telegram-init"
-      strategy="afterInteractive"
-      dangerouslySetInnerHTML={{
-        __html: `
-          if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.ready();
-            window.Telegram.WebApp.expand();
-          }
-        `
-      }}
-    />
-  );
-}
-
 export default function RootLayout({ children }) {
   return (
     <html lang="ru">
@@ -34,7 +17,41 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <TelegramInit />
+        <Script
+          id="telegram-init"
+          strategy="afterInteractive"
+        >
+          {`
+            (function () {
+              function initializeTelegram() {
+                if (
+                  window.Telegram &&
+                  window.Telegram.WebApp
+                ) {
+                  window.Telegram.WebApp.ready();
+                  window.Telegram.WebApp.expand();
+                  window.dispatchEvent(
+                    new Event("telegram-webapp-ready")
+                  );
+                }
+              }
+
+              if (
+                window.Telegram &&
+                window.Telegram.WebApp
+              ) {
+                initializeTelegram();
+              } else {
+                window.addEventListener(
+                  "load",
+                  initializeTelegram
+                );
+                setTimeout(initializeTelegram, 500);
+              }
+            })();
+          `}
+        </Script>
+
         {children}
       </body>
     </html>
