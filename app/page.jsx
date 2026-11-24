@@ -1,5 +1,8 @@
 
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const courses = [
   {
@@ -41,10 +44,29 @@ const courses = [
 ];
 
 export default function Home() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 80);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <main className="site">
       <style>{`
-        * { box-sizing: border-box; }
+        * {
+          box-sizing: border-box;
+        }
+
+        html {
+          scroll-behavior: smooth;
+        }
 
         body {
           margin: 0;
@@ -55,7 +77,47 @@ export default function Home() {
 
         .site {
           min-height: 100vh;
-          overflow: hidden;
+          position: relative;
+          isolation: isolate;
+          overflow-x: clip;
+        }
+
+        .background-logo {
+          position: fixed;
+          top: 43%;
+          left: 50%;
+          width: min(78vw, 850px);
+          max-height: 48vh;
+          height: auto;
+          object-fit: contain;
+          transform: translate(-50%, -50%);
+          pointer-events: none;
+          user-select: none;
+          transition:
+            opacity 1s ease,
+            transform 1s ease,
+            filter 1s ease;
+        }
+
+        .background-logo.is-front {
+          z-index: 5;
+          opacity: 0.78;
+          filter: drop-shadow(0 0 35px rgba(199, 255, 77, 0.12));
+        }
+
+        .background-logo.is-background {
+          z-index: 0;
+          opacity: 0.10;
+          transform: translate(-50%, -50%) scale(0.88);
+          filter: blur(0.3px);
+        }
+
+        .header,
+        .hero,
+        .catalog,
+        .footer {
+          position: relative;
+          z-index: 1;
         }
 
         .header {
@@ -72,7 +134,9 @@ export default function Home() {
           letter-spacing: 4px;
         }
 
-        .logo span { color: #c7ff4d; }
+        .logo span {
+          color: #c7ff4d;
+        }
 
         .header-label {
           color: #777;
@@ -101,7 +165,9 @@ export default function Home() {
           max-width: 850px;
         }
 
-        .hero h1 span { color: #c7ff4d; }
+        .hero h1 span {
+          color: #c7ff4d;
+        }
 
         .hero p {
           color: #929292;
@@ -167,7 +233,9 @@ export default function Home() {
           background: #101010;
         }
 
-        .card-content { padding: 25px; }
+        .card-content {
+          padding: 25px;
+        }
 
         .card-top {
           display: flex;
@@ -245,17 +313,75 @@ export default function Home() {
         }
 
         @media (max-width: 650px) {
-          .header { padding: 24px 6%; }
-          .logo { font-size: 23px; }
-          .header-label { font-size: 8px; }
-          .hero { padding: 90px 7% 65px; }
-          .hero h1 { letter-spacing: -3px; }
-          .catalog { padding: 25px 7% 80px; }
-          .grid { grid-template-columns: 1fr; gap: 18px; }
-          .card-content { padding: 22px; }
-          .soon-section { padding: 24px; }
+          .background-logo {
+            width: 92vw;
+            max-height: 35vh;
+            top: 40%;
+          }
+
+          .background-logo.is-front {
+            opacity: 0.72;
+          }
+
+          .background-logo.is-background {
+            opacity: 0.09;
+          }
+
+          .header {
+            padding: 24px 6%;
+          }
+
+          .logo {
+            font-size: 23px;
+          }
+
+          .header-label {
+            font-size: 8px;
+          }
+
+          .hero {
+            padding: 90px 7% 65px;
+          }
+
+          .hero h1 {
+            letter-spacing: -3px;
+          }
+
+          .catalog {
+            padding: 25px 7% 80px;
+          }
+
+          .grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
+          }
+
+          .card-content {
+            padding: 22px;
+          }
+
+          .soon-section {
+            padding: 24px;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .background-logo {
+            transition: none;
+          }
+
+          html {
+            scroll-behavior: auto;
+          }
         }
       `}</style>
+
+      <img
+        src="/58436AA0-2DCE-4060-A6F0-9A6E1CC46E8A.png"
+        alt=""
+        aria-hidden="true"
+        className={`background-logo ${scrolled ? "is-background" : "is-front"}`}
+      />
 
       <header className="header">
         <div className="logo">
