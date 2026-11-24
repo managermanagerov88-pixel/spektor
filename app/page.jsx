@@ -155,53 +155,15 @@ export default function Home() {
           aspect-ratio: 16 / 9;
           position: relative;
           overflow: hidden;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background:
-            radial-gradient(ellipse at 50% 50%, #202b12 0%, #101010 48%, #080808 100%);
+          background: #101010;
           border-bottom: 1px solid #292929;
         }
 
-        .cover::before {
-          content: "";
-          position: absolute;
-          width: 75%;
-          height: 160%;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(199,255,77,.18),
-            transparent
-          );
-          transform: rotate(35deg);
-          animation: light 6s ease-in-out infinite;
-        }
-
-        .cover-word {
-          position: relative;
-          z-index: 1;
-          font-size: clamp(35px, 7vw, 72px);
-          font-weight: 900;
-          letter-spacing: -3px;
-        }
-
-        .cover-number {
-          position: absolute;
-          right: 18px;
-          bottom: 12px;
-          color: #555;
-          font-size: 13px;
-          letter-spacing: 3px;
-        }
-
-        .cover-line {
-          position: absolute;
-          width: 65%;
-          height: 1px;
-          background: #c7ff4d;
-          opacity: .7;
-          transform: rotate(-28deg);
+        .cover-image {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
 
         .card-content { padding: 25px; }
@@ -281,11 +243,6 @@ export default function Home() {
           letter-spacing: 2px;
         }
 
-        @keyframes light {
-          0%, 100% { left: -100%; }
-          50% { left: 100%; }
-        }
-
         @media (max-width: 650px) {
           .header { padding: 24px 6%; }
           .logo { font-size: 23px; }
@@ -295,7 +252,6 @@ export default function Home() {
           .catalog { padding: 25px 7% 80px; }
           .grid { grid-template-columns: 1fr; gap: 18px; }
           .card-content { padding: 22px; }
-          .cover-word { font-size: 60px; }
           .soon-section { padding: 24px; }
         }
       `}</style>
@@ -332,11 +288,11 @@ export default function Home() {
               href={`/courses/${course.visual}`}
             >
               <div className="cover">
-                <div className="cover-line"></div>
-                <div className="cover-word">{course.title}</div>
-                <div className="cover-number">
-                  {course.id} / 04
-                </div>
+                <img
+                  src={`/courses/${course.visual}.jpg`}
+                  alt={course.title}
+                  className="cover-image"
+                />
               </div>
 
               <div className="card-content">
