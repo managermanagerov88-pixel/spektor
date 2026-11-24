@@ -1,6 +1,7 @@
 
 import "./globals.css";
 import Script from "next/script";
+import TelegramInit from "./telegram-init";
 
 export const metadata = {
   title: "SPEKTOR — Digital Education",
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
+        <TelegramInit />
         {children}
       </body>
     </html>
