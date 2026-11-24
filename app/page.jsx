@@ -163,7 +163,8 @@ export default function Home() {
           display: block;
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          object-fit: contain;
+          background: #101010;
         }
 
         .card-content { padding: 25px; }
