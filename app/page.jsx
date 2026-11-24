@@ -44,11 +44,12 @@ const courses = [
 ];
 
 export default function Home() {
-  const [scrolled, setScrolled] = useState(false);
+  const [logoOpacity, setLogoOpacity] = useState(1);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 80);
+      const progress = Math.min(window.scrollY / 450, 1);
+      setLogoOpacity(1 - progress * 0.88);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -60,13 +61,7 @@ export default function Home() {
   return (
     <main className="site">
       <style>{`
-        * {
-          box-sizing: border-box;
-        }
-
-        html {
-          scroll-behavior: smooth;
-        }
+        * { box-sizing: border-box; }
 
         body {
           margin: 0;
@@ -77,47 +72,7 @@ export default function Home() {
 
         .site {
           min-height: 100vh;
-          position: relative;
-          isolation: isolate;
-          overflow-x: clip;
-        }
-
-        .background-logo {
-          position: fixed;
-          top: 43%;
-          left: 50%;
-          width: min(78vw, 850px);
-          max-height: 48vh;
-          height: auto;
-          object-fit: contain;
-          transform: translate(-50%, -50%);
-          pointer-events: none;
-          user-select: none;
-          transition:
-            opacity 1s ease,
-            transform 1s ease,
-            filter 1s ease;
-        }
-
-        .background-logo.is-front {
-          z-index: 5;
-          opacity: 0.78;
-          filter: drop-shadow(0 0 35px rgba(199, 255, 77, 0.12));
-        }
-
-        .background-logo.is-background {
-          z-index: 0;
-          opacity: 0.10;
-          transform: translate(-50%, -50%) scale(0.88);
-          filter: blur(0.3px);
-        }
-
-        .header,
-        .hero,
-        .catalog,
-        .footer {
-          position: relative;
-          z-index: 1;
+          overflow: hidden;
         }
 
         .header {
@@ -134,9 +89,7 @@ export default function Home() {
           letter-spacing: 4px;
         }
 
-        .logo span {
-          color: #c7ff4d;
-        }
+        .logo span { color: #c7ff4d; }
 
         .header-label {
           color: #777;
@@ -145,9 +98,28 @@ export default function Home() {
         }
 
         .hero {
-          padding: 105px 7% 85px;
+          padding: 55px 7% 85px;
           max-width: 1200px;
           margin: auto;
+        }
+
+        .hero-logo-wrap {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          margin-bottom: 45px;
+          min-height: 180px;
+          transition: opacity .15s linear;
+        }
+
+        .hero-logo {
+          display: block;
+          width: min(100%, 470px);
+          max-height: 210px;
+          object-fit: contain;
+          object-position: left center;
+          border: 0;
+          background: transparent;
         }
 
         .eyebrow {
@@ -165,9 +137,7 @@ export default function Home() {
           max-width: 850px;
         }
 
-        .hero h1 span {
-          color: #c7ff4d;
-        }
+        .hero h1 span { color: #c7ff4d; }
 
         .hero p {
           color: #929292;
@@ -233,9 +203,7 @@ export default function Home() {
           background: #101010;
         }
 
-        .card-content {
-          padding: 25px;
-        }
+        .card-content { padding: 25px; }
 
         .card-top {
           display: flex;
@@ -313,75 +281,28 @@ export default function Home() {
         }
 
         @media (max-width: 650px) {
-          .background-logo {
-            width: 92vw;
-            max-height: 35vh;
-            top: 40%;
+          .header { padding: 24px 6%; }
+          .logo { font-size: 23px; }
+          .header-label { font-size: 8px; }
+          .hero { padding: 40px 7% 65px; }
+
+          .hero-logo-wrap {
+            min-height: 130px;
+            margin-bottom: 35px;
           }
 
-          .background-logo.is-front {
-            opacity: 0.72;
+          .hero-logo {
+            width: min(100%, 350px);
+            max-height: 150px;
           }
 
-          .background-logo.is-background {
-            opacity: 0.09;
-          }
-
-          .header {
-            padding: 24px 6%;
-          }
-
-          .logo {
-            font-size: 23px;
-          }
-
-          .header-label {
-            font-size: 8px;
-          }
-
-          .hero {
-            padding: 90px 7% 65px;
-          }
-
-          .hero h1 {
-            letter-spacing: -3px;
-          }
-
-          .catalog {
-            padding: 25px 7% 80px;
-          }
-
-          .grid {
-            grid-template-columns: 1fr;
-            gap: 18px;
-          }
-
-          .card-content {
-            padding: 22px;
-          }
-
-          .soon-section {
-            padding: 24px;
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .background-logo {
-            transition: none;
-          }
-
-          html {
-            scroll-behavior: auto;
-          }
+          .hero h1 { letter-spacing: -3px; }
+          .catalog { padding: 25px 7% 80px; }
+          .grid { grid-template-columns: 1fr; gap: 18px; }
+          .card-content { padding: 22px; }
+          .soon-section { padding: 24px; }
         }
       `}</style>
-
-      <img
-        src="/58436AA0-2DCE-4060-A6F0-9A6E1CC46E8A.png"
-        alt=""
-        aria-hidden="true"
-        className={`background-logo ${scrolled ? "is-background" : "is-front"}`}
-      />
 
       <header className="header">
         <div className="logo">
@@ -391,12 +312,25 @@ export default function Home() {
       </header>
 
       <section className="hero">
+        <div
+          className="hero-logo-wrap"
+          style={{ opacity: logoOpacity }}
+        >
+          <img
+            src="/courses/58436AA0-2DCE-4060-A6F0-9A6E1CC46E8A.png"
+            alt="SPEKTOR"
+            className="hero-logo"
+          />
+        </div>
+
         <div className="eyebrow">KNOWLEDGE. SKILLS. RESULTS.</div>
+
         <h1>
           LEVEL UP
           <br />
           YOUR <span>MIND.</span>
         </h1>
+
         <p>
           Практические знания и навыки,
           которые открывают новые возможности.
