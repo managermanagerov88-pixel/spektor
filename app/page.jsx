@@ -44,12 +44,13 @@ const courses = [
 ];
 
 export default function Home() {
-  const [logoOpacity, setLogoOpacity] = useState(1);
+  const [logoOpacity, setLogoOpacity] = useState(0.9);
 
   useEffect(() => {
     const handleScroll = () => {
       const progress = Math.min(window.scrollY / 450, 1);
-      setLogoOpacity(1 - progress * 0.88);
+      const opacity = 0.9 - progress * 0.78;
+      setLogoOpacity(opacity);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -73,6 +74,32 @@ export default function Home() {
         .site {
           min-height: 100vh;
           overflow: hidden;
+          position: relative;
+          isolation: isolate;
+        }
+
+        .background-logo {
+          position: fixed;
+          z-index: 0;
+          pointer-events: none;
+          top: 95px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: min(82vw, 850px);
+          height: min(65vh, 650px);
+          object-fit: contain;
+          object-position: center;
+          border: 0;
+          background: transparent;
+          transition: opacity 0.15s linear;
+        }
+
+        .header,
+        .hero,
+        .catalog,
+        .footer {
+          position: relative;
+          z-index: 1;
         }
 
         .header {
@@ -98,28 +125,9 @@ export default function Home() {
         }
 
         .hero {
-          padding: 55px 7% 85px;
+          padding: 390px 7% 85px;
           max-width: 1200px;
           margin: auto;
-        }
-
-        .hero-logo-wrap {
-          display: flex;
-          justify-content: flex-start;
-          align-items: center;
-          margin-bottom: 45px;
-          min-height: 180px;
-          transition: opacity .15s linear;
-        }
-
-        .hero-logo {
-          display: block;
-          width: min(100%, 470px);
-          max-height: 210px;
-          object-fit: contain;
-          object-position: left center;
-          border: 0;
-          background: transparent;
         }
 
         .eyebrow {
@@ -284,25 +292,32 @@ export default function Home() {
           .header { padding: 24px 6%; }
           .logo { font-size: 23px; }
           .header-label { font-size: 8px; }
-          .hero { padding: 40px 7% 65px; }
 
-          .hero-logo-wrap {
-            min-height: 130px;
-            margin-bottom: 35px;
+          .background-logo {
+            top: 90px;
+            width: 94vw;
+            height: 250px;
           }
 
-          .hero-logo {
-            width: min(100%, 350px);
-            max-height: 150px;
+          .hero {
+            padding: 275px 7% 65px;
           }
 
           .hero h1 { letter-spacing: -3px; }
+
           .catalog { padding: 25px 7% 80px; }
           .grid { grid-template-columns: 1fr; gap: 18px; }
           .card-content { padding: 22px; }
           .soon-section { padding: 24px; }
         }
       `}</style>
+
+      <img
+        src="/courses/58436AA0-2DCE-4060-A6F0-9A6E1CC46E8A.png"
+        alt=""
+        className="background-logo"
+        style={{ opacity: logoOpacity }}
+      />
 
       <header className="header">
         <div className="logo">
@@ -312,17 +327,6 @@ export default function Home() {
       </header>
 
       <section className="hero">
-        <div
-          className="hero-logo-wrap"
-          style={{ opacity: logoOpacity }}
-        >
-          <img
-            src="/courses/58436AA0-2DCE-4060-A6F0-9A6E1CC46E8A.png"
-            alt="SPEKTOR"
-            className="hero-logo"
-          />
-        </div>
-
         <div className="eyebrow">KNOWLEDGE. SKILLS. RESULTS.</div>
 
         <h1>
