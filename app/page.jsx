@@ -1,4 +1,6 @@
 
+import Link from "next/link";
+
 const courses = [
   {
     id: "01",
@@ -324,14 +326,10 @@ export default function Home() {
 
         <div className="grid">
           {courses.map((course) => (
-            <a
+            <Link
               className="card"
               key={course.id}
-              href={
-                course.active
-                  ? `#${course.visual}`
-                  : "#coming-soon"
-              }
+              href={`/courses/${course.visual}`}
             >
               <div className="cover">
                 <div className="cover-line"></div>
@@ -359,7 +357,7 @@ export default function Home() {
                   {course.active ? "ПОДРОБНЕЕ" : "СКОРО"}
                 </div>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
 
