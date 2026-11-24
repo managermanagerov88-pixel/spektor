@@ -41,6 +41,36 @@ export default async function CoursePage({ params }) {
       </header>
 
       <section className="course-content">
+
+        {isSoon ? (
+          <div className="maintenance-visual">
+            <div className="maintenance-glow" />
+            <svg
+              className="wrench-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94L14.7 6.3Z"
+                stroke="#c7ff4d"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <div className="maintenance-text">COMING SOON</div>
+          </div>
+        ) : (
+          <div className="course-cover">
+            <img
+              src={`/courses/${slug}.jpg`}
+              alt={course.title}
+              className="course-cover-image"
+            />
+          </div>
+        )}
+
         <div className="course-status">
           <span className={isSoon ? "status-dot soon" : "status-dot"} />
           {course.status}
@@ -69,6 +99,10 @@ export default async function CoursePage({ params }) {
       </footer>
 
       <style>{`
+        * {
+          box-sizing: border-box;
+        }
+
         .course-page {
           min-height: 100vh;
           background: #0b0c0f;
@@ -106,7 +140,65 @@ export default async function CoursePage({ params }) {
           width: 100%;
           max-width: 850px;
           margin: auto;
-          padding: 100px 0;
+          padding: 75px 0 100px;
+        }
+
+        .course-cover,
+        .maintenance-visual {
+          width: 100%;
+          aspect-ratio: 16 / 9;
+          margin-bottom: 50px;
+          overflow: hidden;
+          position: relative;
+          background: #101010;
+          border: 1px solid #292929;
+          border-radius: 8px;
+        }
+
+        .course-cover-image {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
+        .maintenance-visual {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          gap: 18px;
+          background:
+            radial-gradient(
+              ellipse at center,
+              #1b2610 0%,
+              #101010 55%,
+              #090909 100%
+            );
+        }
+
+        .maintenance-glow {
+          position: absolute;
+          width: 180px;
+          height: 180px;
+          border-radius: 50%;
+          background: #c7ff4d;
+          opacity: .07;
+          filter: blur(65px);
+        }
+
+        .wrench-icon {
+          position: relative;
+          width: 85px;
+          height: 85px;
+          filter: drop-shadow(0 0 15px rgba(199,255,77,.25));
+        }
+
+        .maintenance-text {
+          position: relative;
+          color: #777;
+          font-size: 10px;
+          letter-spacing: 5px;
         }
 
         .course-status {
@@ -188,11 +280,21 @@ export default async function CoursePage({ params }) {
           }
 
           .course-content {
-            padding: 80px 0;
+            padding: 55px 0 80px;
+          }
+
+          .course-cover,
+          .maintenance-visual {
+            margin-bottom: 40px;
           }
 
           .course-status {
             margin-bottom: 40px;
+          }
+
+          .wrench-icon {
+            width: 65px;
+            height: 65px;
           }
 
           h1 {
