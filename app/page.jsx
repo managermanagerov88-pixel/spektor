@@ -61,26 +61,30 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    let timer;
+    let timer = null;
     let attempts = 0;
     let cancelled = false;
+    let requestStarted = false;
 
     const authenticate = async () => {
-      if (cancelled) return;
+      if (cancelled || requestStarted) return;
 
       const initData = window.Telegram?.WebApp?.initData;
 
       if (!initData) {
         attempts += 1;
 
-        if (attempts < 20) {
+        if (attempts < 40) {
           timer = setTimeout(authenticate, 250);
-        } else {
+        } else if (!cancelled) {
           setAuthStatus("ОТКРОЙТЕ ЧЕРЕЗ TELEGRAM");
         }
 
         return;
       }
+
+      requestStarted = true;
+      setAuthStatus("АВТОРИЗАЦИЯ...");
 
       try {
         const response = await fetch("/api/auth", {
@@ -91,19 +95,31 @@ export default function Home() {
           body: JSON.stringify({ initData })
         });
 
-        const data = await response.json();
+        let data;
+
+        try {
+          data = await response.json();
+        } catch {
+          throw new Error(
+            `СЕРВЕР ВЕРНУЛ НЕВЕРНЫЙ ОТВЕТ: ${response.status}`
+          );
+        }
 
         if (!response.ok || !data.success || !data.user) {
-          throw new Error("Authentication failed");
+          throw new Error(
+            data.error || `ОШИБКА СЕРВЕРА: ${response.status}`
+          );
         }
 
         if (!cancelled) {
           setUser(data.user);
           setAuthStatus("АВТОРИЗОВАН");
         }
-      } catch {
+      } catch (error) {
         if (!cancelled) {
-          setAuthStatus("ОШИБКА АВТОРИЗАЦИИ");
+          setAuthStatus(
+            error.message || "ОШИБКА СЕТИ"
+          );
         }
       }
     };
@@ -112,7 +128,10 @@ export default function Home() {
 
     return () => {
       cancelled = true;
-      clearTimeout(timer);
+
+      if (timer) {
+        clearTimeout(timer);
+      }
     };
   }, []);
 
@@ -185,6 +204,8 @@ export default function Home() {
           letter-spacing: 1px;
           margin-top: 7px;
           text-align: right;
+          overflow-wrap: anywhere;
+          max-width: 220px;
         }
 
         .hero {
