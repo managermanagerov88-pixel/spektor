@@ -1,11 +1,13 @@
-
 import crypto from "crypto";
+import { createClient } from "@supabase/supabase-js";
 
 export async function POST(request) {
   try {
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseSecret = process.env.SUPABASE_SECRET_KEY;
 
-    if (!botToken) {
+    if (!botToken || !supabaseUrl || !supabaseSecret) {
       return Response.json(
         { error: "Server configuration error" },
         { status: 500 }
@@ -85,6 +87,38 @@ export async function POST(request) {
 
     const user = JSON.parse(userData);
 
+    if (!user.id) {
+      return Response.json(
+        { error: "Invalid user data" },
+        { status: 401 }
+      );
+    }
+
+    const supabase = createClient(
+      supabaseUrl,
+      supabaseSecret
+    );
+
+    const { error } = await supabase
+      .from("users")
+      .upsert(
+        {
+          telegram_id: String(user.id),
+          first_name: user.first_name || null,
+          username: user.username || null
+        },
+        { onConflict: "telegram_id" }
+      );
+
+    if (error) {
+      console.error("Supabase user save error:", error);
+
+      return Response.json(
+        { error: "Database error" },
+        { status: 500 }
+      );
+    }
+
     return Response.json({
       success: true,
       user: {
@@ -94,7 +128,9 @@ export async function POST(request) {
       }
     });
 
-  } catch {
+  } catch (error) {
+    console.error("Auth error:", error);
+
     return Response.json(
       { error: "Internal server error" },
       { status: 500 }
