@@ -4,49 +4,39 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const courses = [
-  {
-    id: "01",
-    title: "P2P",
+const courseSettings = {
+  p2p: {
     subtitle: "ФИНАНСЫ И КРИПТОВАЛЮТА",
-    description: "Практическое обучение работе с P2P.",
     status: "СКОРО",
     active: false,
     visual: "p2p"
   },
-  {
-    id: "02",
-    title: "ЧАТТИНГ",
+  chatting: {
     subtitle: "COMMUNICATION",
-    description: "Обучение общению и работе в чатинге.",
     status: "ДОСТУПЕН",
     active: true,
     visual: "chatting"
   },
-  {
-    id: "03",
-    title: "УБТ",
+  ubt: {
     subtitle: "АРБИТРАЖ ТРАФИКА",
-    description: "Привлечение трафика и работа с рекламными источниками.",
     status: "СКОРО",
     active: false,
     visual: "ubt"
   },
-  {
-    id: "04",
-    title: "ТОВАРКА",
+  goods: {
     subtitle: "МЕЖДУНАРОДНАЯ ТОРГОВЛЯ",
-    description: "Заказ товаров из разных стран.",
     status: "ДОСТУПЕН",
     active: true,
     visual: "goods"
   }
-];
+};
 
 export default function Home() {
   const [logoOpacity, setLogoOpacity] = useState(0.9);
   const [user, setUser] = useState(null);
   const [authStatus, setAuthStatus] = useState("ПРОВЕРКА TELEGRAM...");
+  const [courses, setCourses] = useState([]);
+  const [coursesStatus, setCoursesStatus] = useState("ЗАГРУЗКА КУРСОВ...");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,6 +48,55 @@ export default function Home() {
     handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCourses = async () => {
+      try {
+        const response = await fetch("/api/courses");
+        const data = await response.json();
+
+        if (!response.ok || !data.success || !Array.isArray(data.courses)) {
+          throw new Error("Не удалось загрузить курсы");
+        }
+
+        const loadedCourses = data.courses
+          .filter((course) => courseSettings[course.slug])
+          .map((course) => {
+            const settings = courseSettings[course.slug];
+
+            return {
+              id: String(course.id).padStart(2, "0"),
+              title: course.title,
+              description: course.description,
+              price: course.price,
+              subtitle: settings.subtitle,
+              status: settings.status,
+              active: settings.active,
+              visual: settings.visual
+            };
+          });
+
+        if (!cancelled) {
+          setCourses(loadedCourses);
+          setCoursesStatus("");
+        }
+      } catch (error) {
+        console.error("Courses loading error:", error);
+
+        if (!cancelled) {
+          setCoursesStatus("НЕ УДАЛОСЬ ЗАГРУЗИТЬ КУРСЫ");
+        }
+      }
+    };
+
+    loadCourses();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -435,42 +474,48 @@ export default function Home() {
         <div className="catalog-label">OUR PROGRAMS / 2026</div>
         <h2>Выбери своё направление.</h2>
 
-        <div className="grid">
-          {courses.map((course) => (
-            <Link
-              className="card"
-              key={course.id}
-              href={`/courses/${course.visual}`}
-            >
-              <div className="cover">
-                <img
-                  src={`/courses/${course.visual}.jpg`}
-                  alt={course.title}
-                  className="cover-image"
-                />
-              </div>
+        {coursesStatus ? (
+          <p style={{ color: "#888", fontSize: "13px" }}>
+            {coursesStatus}
+          </p>
+        ) : (
+          <div className="grid">
+            {courses.map((course) => (
+              <Link
+                className="card"
+                key={course.id}
+                href={`/courses/${course.visual}`}
+              >
+                <div className="cover">
+                  <img
+                    src={`/courses/${course.visual}.jpg`}
+                    alt={course.title}
+                    className="cover-image"
+                  />
+                </div>
 
-              <div className="card-content">
-                <div className="card-top">
-                  <div className="category">{course.subtitle}</div>
-                  <div className={`status ${course.active ? "" : "soon"}`}>
-                    {course.status}
+                <div className="card-content">
+                  <div className="card-top">
+                    <div className="category">{course.subtitle}</div>
+                    <div className={`status ${course.active ? "" : "soon"}`}>
+                      {course.status}
+                    </div>
+                  </div>
+
+                  <h3>{course.title}</h3>
+
+                  <div className="card-description">
+                    {course.description}
+                  </div>
+
+                  <div className="card-link">
+                    {course.active ? "ПОДРОБНЕЕ" : "СКОРО"}
                   </div>
                 </div>
-
-                <h3>{course.title}</h3>
-
-                <div className="card-description">
-                  {course.description}
-                </div>
-
-                <div className="card-link">
-                  {course.active ? "ПОДРОБНЕЕ" : "СКОРО"}
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
 
         <div className="soon-section" id="coming-soon">
           <h3>Новые направления уже готовятся.</h3>
