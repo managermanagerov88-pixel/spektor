@@ -21,10 +21,18 @@ export async function GET() {
       );
     }
 
-    return Response.json({
-      success: true,
-      courses: data
-    });
+    return new Response(
+      JSON.stringify({
+        success: true,
+        courses: data
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json; charset=utf-8"
+        }
+      }
+    );
 
   } catch (error) {
     console.error("Courses API error:", error);
