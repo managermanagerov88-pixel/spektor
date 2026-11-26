@@ -7,26 +7,18 @@ import { useEffect, useState } from "react";
 const courseSettings = {
   p2p: {
     subtitle: "ФИНАНСЫ И КРИПТОВАЛЮТА",
-    status: "СКОРО",
-    active: false,
     visual: "p2p"
   },
   chatting: {
     subtitle: "COMMUNICATION",
-    status: "ДОСТУПЕН",
-    active: true,
     visual: "chatting"
   },
   ubt: {
     subtitle: "АРБИТРАЖ ТРАФИКА",
-    status: "СКОРО",
-    active: false,
     visual: "ubt"
   },
   goods: {
     subtitle: "МЕЖДУНАРОДНАЯ ТОРГОВЛЯ",
-    status: "ДОСТУПЕН",
-    active: true,
     visual: "goods"
   }
 };
@@ -66,6 +58,7 @@ export default function Home() {
           .filter((course) => courseSettings[course.slug])
           .map((course) => {
             const settings = courseSettings[course.slug];
+            const active = course.is_active === true;
 
             return {
               id: String(course.id).padStart(2, "0"),
@@ -73,8 +66,8 @@ export default function Home() {
               description: course.description,
               price: course.price,
               subtitle: settings.subtitle,
-              status: settings.status,
-              active: settings.active,
+              active,
+              status: active ? "ДОСТУПЕН" : "СКОРО",
               visual: settings.visual
             };
           });
@@ -156,9 +149,7 @@ export default function Home() {
         }
       } catch (error) {
         if (!cancelled) {
-          setAuthStatus(
-            error.message || "ОШИБКА СЕТИ"
-          );
+          setAuthStatus(error.message || "ОШИБКА СЕТИ");
         }
       }
     };
