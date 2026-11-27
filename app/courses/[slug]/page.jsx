@@ -17,6 +17,8 @@ const courses = {
   chatting: {
     title: "ЧАТТИНГ",
     status: "ДОСТУПЕН",
+    price: "2 875 ₽",
+    dollarPrice: "$35",
     description: "Практический курс для тех, кто хочет освоить профессию чаттера с нуля.\n\nТы узнаешь, как устроена работа на OnlyFans, научишься общаться с мемберами, выстраивать эффективные переписки, работать с платным контентом, проводить рассылки и увеличивать продажи.\n\nВ курсе разобраны основные инструменты чаттера, рабочие процессы, поиск вакансий и особенности заработка. Обучение подойдёт даже тем, кто раньше не сталкивался с этой сферой.\n\nВсё необходимое для старта в профессии чаттера в одном обучении."
   },
   goods: {
@@ -88,6 +90,14 @@ export default async function CoursePage({ params }) {
           <p className="course-description">
             {course.description}
           </p>
+        )}
+
+        {!isSoon && course.price && (
+          <div className="course-price">
+            <span className="price-rub">{course.price}</span>
+            <span className="price-divider">/</span>
+            <span className="price-usd">{course.dollarPrice}</span>
+          </div>
         )}
 
         {!isSoon && <PurchaseButton courseSlug={slug} />}
@@ -249,6 +259,30 @@ export default async function CoursePage({ params }) {
           margin-bottom: 45px;
         }
 
+        .course-price {
+          display: flex;
+          align-items: baseline;
+          gap: 12px;
+          margin-top: -15px;
+          margin-bottom: 30px;
+          font-size: 27px;
+          font-weight: 800;
+          letter-spacing: -0.5px;
+        }
+
+        .price-rub {
+          color: #c7ff4d;
+        }
+
+        .price-divider {
+          color: #666;
+          font-weight: 400;
+        }
+
+        .price-usd {
+          color: #f5f5f5;
+        }
+
         .back-button {
           display: inline-block;
           margin-top: 20px;
@@ -309,6 +343,10 @@ export default async function CoursePage({ params }) {
 
           .course-description {
             font-size: 15px;
+          }
+
+          .course-price {
+            font-size: 24px;
           }
         }
       `}</style>
