@@ -1,6 +1,7 @@
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import PurchaseButton from "./PurchaseButton";
 
 const courses = {
   p2p: {
@@ -88,6 +89,8 @@ export default async function CoursePage({ params }) {
             {course.description}
           </p>
         )}
+
+        {!isSoon && <PurchaseButton courseSlug={slug} />}
 
         <Link href="/" className="back-button">
           ВЕРНУТЬСЯ В КАТАЛОГ
