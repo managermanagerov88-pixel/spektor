@@ -251,18 +251,21 @@ export default async function CoursePage({ params }) {
 
         .back-button {
           display: inline-block;
+          margin-top: 20px;
           padding: 17px 24px;
-          background: #c7ff4d;
-          color: #10110d;
+          background: transparent;
+          border: 1px solid #c7ff4d;
+          color: #c7ff4d;
           text-decoration: none;
           font-size: 11px;
           font-weight: 800;
           letter-spacing: 1px;
-          transition: opacity 0.2s;
+          transition: background 0.2s, color 0.2s;
         }
 
         .back-button:hover {
-          opacity: 0.8;
+          background: #c7ff4d;
+          color: #10110d;
         }
 
         .course-footer {
